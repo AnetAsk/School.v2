@@ -22,7 +22,8 @@ namespace Infrastructure.Persistence.Implementations
 
         public StudentDto GetById(int id)
         {
-            throw new System.NotImplementedException();
+            var student = _context.Students.Find(id);
+            return _mapper.Map<StudentDto>(student);
         }
 
         public IList<StudentDto> GetAll()

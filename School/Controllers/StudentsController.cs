@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using Infrastructure.Persistence.DTO;
 using Infrastructure.Persistence.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using School.Responses;
 
 namespace School.Controllers
 {
@@ -14,10 +17,13 @@ namespace School.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IStudentRepository _studentRepository;
+        private IMapper _mapper;
 
-        public StudentsController(IStudentRepository studentRepository)
+        public StudentsController(IStudentRepository studentRepository, 
+            IMapper mapper)
         {
             _studentRepository = studentRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -26,6 +32,27 @@ namespace School.Controllers
             var result = _studentRepository.GetAll();
 
             return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            var result = _studentRepository.GetById(id);
+
+            var response = new StudentResponse();
+
+            if (result != null)
+            {
+                response = _mapper.Map<StudentResponse>(result);
+                response.StatusCode = HttpStatusCode.OK;
+            }
+            else
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.ErrorMessage = "Student Not Found!";
+            }
+
+            return new JsonResult(response);
         }
 
 
@@ -52,5 +79,14 @@ namespace School.Controllers
 
             return Ok(result);
         }
+
+        //[HttpGet("{id}")]
+        //public IActionResult Get(int id)
+        //{
+        //    var result = _studentRepository.GetById(id);
+
+        //    return Ok(result);
+        //}
+
     }
 }
