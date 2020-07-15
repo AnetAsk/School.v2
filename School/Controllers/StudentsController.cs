@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Infrastructure.Persistence.DTO;
 using Infrastructure.Persistence.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using School.Commands;
+using School.Requests;
 using School.Responses;
 
 namespace School.Controllers
@@ -16,77 +20,80 @@ namespace School.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly IStudentRepository _studentRepository;
-        private IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public StudentsController(IStudentRepository studentRepository, 
-            IMapper mapper)
+        public StudentsController(IMediator mediator)
         {
-            _studentRepository = studentRepository;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var result = _studentRepository.GetAll();
-
-            return Ok(result);
+            var request = new GetSchoolRequest();
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
+
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var result = _studentRepository.GetById(id);
-
-            var response = new StudentResponse();
-
-            if (result != null)
-            {
-                response = _mapper.Map<StudentResponse>(result);
-                response.StatusCode = HttpStatusCode.OK;
-            }
-            else
-            {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.ErrorMessage = "Student Not Found!";
-            }
-
-            return new JsonResult(response);
+            var request = new GetStudentByIdRequest(id);
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
 
         [HttpPost]
-        public IActionResult Create(StudentDto studentDto)
+        public async Task<IActionResult> Create(StudentDto studentDto)
         {
-            var result = _studentRepository.Create(studentDto);
-
-            return Ok(result);
+            var createStudentCommand = new CreateStudentCommand(studentDto);
+            var response = await _mediator.Send(createStudentCommand);
+            return Ok(response);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Edit(int id, [FromBody] StudentDto studentDto)
-        {
-            var result = _studentRepository.Update(id, studentDto);
+        //[HttpPut("{id}")]
+        //public IActionResult Edit(int id, [FromBody] StudentDto studentDto)
+        //{
+        //    var result = _studentRepository.Update(id, studentDto);
 
-            return Ok(result);
-        }
+        //    if (result == null)
+        //    {
+        //        _logger.LogError("Not updated");
+        //    }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var result = _studentRepository.Remove(id);
+        //    return Ok(result);
+        //}
 
-            return Ok(result);
-        }
+        //[HttpDelete("{id}")]
+        //public IActionResult Delete(int id)
+        //{
+        //    var result = _studentRepository.Remove(id);
+
+        //    return Ok(result);
+        //}
+
 
         //[HttpGet("{id}")]
         //public IActionResult Get(int id)
         //{
         //    var result = _studentRepository.GetById(id);
 
-        //    return Ok(result);
-        //}
+        //    var response = new StudentResponse();
 
+        //    if (result != null)
+        //    {
+        //        response = _mapper.Map<StudentResponse>(result);
+        //        response.StatusCode = HttpStatusCode.OK;
+        //    }
+        //    else
+        //    {
+        //        response.StatusCode = HttpStatusCode.NotFound;
+        //        response.ErrorMessage = "Student Not Found!";
+        //    }
+
+        //    return new JsonResult(response);
+        //}
     }
 }

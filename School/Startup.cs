@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Persistence.Implementations;
 using Infrastructure.Persistence.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,9 @@ namespace School
                 options => options.UseSqlServer(Configuration.GetConnectionString("SchoolDbContext")));
 
             services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddAutoMapper(typeof(Startup));
+            services.AddMediatR(typeof(Startup));
 
             services.AddControllers();
         }
