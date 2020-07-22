@@ -19,11 +19,31 @@ namespace Infrastructure.Persistence.Implementations
             _mapper = mapper;
         }
 
+        public CourseDto Create(CourseDto courseDto)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IList<CourseDto> GetAll()
         {
             var courses = _context.Courses.ToList();
 
             return _mapper.Map<List<CourseDto>>(courses);
+        }
+
+        public CourseDto GetById(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public CourseDto Remove(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public CourseDto Update(int id, CourseDto courseDto)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

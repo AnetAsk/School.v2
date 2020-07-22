@@ -11,6 +11,7 @@ using MediatR;
 using School.Requests;
 using Infrastructure.Persistence.DTO;
 using School.Commands;
+using Microsoft.CodeAnalysis.Differencing;
 
 namespace School.Controllers
 {
@@ -46,6 +47,22 @@ namespace School.Controllers
         {
             var createCourseCommand = new CreateCourseCommand(courseDto);
             var response = await _mediator.Send(createCourseCommand);
+            return Ok(response);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody] StudentDto studentDto)
+        {
+            var editCourseCommand = new EditCourseCommand(studentDto);
+            var response = await _mediator.Send(editCourseCommand);
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id, [FromBody] StudentDto studentDto)
+        {
+            var deleteCourseCommand = new DeleteCourseCommand(studentDto);
+            var response = await _mediator.Send(deleteCourseCommand);
             return Ok(response);
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Domain.Entities.Entities;
 using Infrastructure.Persistence.DTO;
 using Infrastructure.Persistence.Interfaces;
 using MediatR;
@@ -53,26 +54,21 @@ namespace School.Controllers
             return Ok(response);
         }
 
-        //[HttpPut("{id}")]
-        //public IActionResult Edit(int id, [FromBody] StudentDto studentDto)
-        //{
-        //    var result = _studentRepository.Update(id, studentDto);
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody] StudentDto studentDto)
+        {
+            var editStudentCommand = new EditStudentCommand(studentDto);
+            var response = await _mediator.Send(editStudentCommand);
+            return Ok(response);
+        }
 
-        //    if (result == null)
-        //    {
-        //        _logger.LogError("Not updated");
-        //    }
-
-        //    return Ok(result);
-        //}
-
-        //[HttpDelete("{id}")]
-        //public IActionResult Delete(int id)
-        //{
-        //    var result = _studentRepository.Remove(id);
-
-        //    return Ok(result);
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id, [FromBody] StudentDto studentDto)
+        {
+            var deleteStudentCommand = new DeleteStudentCommand(studentDto);
+            var response = await _mediator.Send(deleteStudentCommand);
+            return Ok(response);
+        }
 
 
         //[HttpGet("{id}")]
